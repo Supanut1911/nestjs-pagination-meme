@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MemeDto } from '../Dto/memeDto';
+import { PaginationDto } from '../Dto/pagination.dto';
 import { MemeService } from './meme.service';
+import { PageParam } from '../Decorator/pagination.decorator'
 
 @Controller('meme')
 export class MemeController {
@@ -10,8 +12,10 @@ export class MemeController {
     ){} 
 
     @Get('get_all_meme')
-    getAllMeme() {
-        return this.memeService.getAllMemes()
+    getAllMeme(
+        @PageParam() paginationDto: PaginationDto
+    ) {
+        return this.memeService.getAllMemes(paginationDto)
     }
 
     @Post('create_meme')
@@ -20,4 +24,6 @@ export class MemeController {
     ) {
         return this.memeService.createMeme(memeDto)
     }
+
+    
 }

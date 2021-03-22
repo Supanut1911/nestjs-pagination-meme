@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MemeDto } from '../Dto/memeDto';
+import { PaginationDto } from '../Dto/pagination.dto';
 import { Meme } from '../Entity/meme.entity';
 
 @Injectable()
@@ -11,9 +12,25 @@ export class MemeService {
         private readonly memeRepo: Repository<Meme>,
     ) {}
 
-    async getAllMemes(): Promise<Meme[]> {
-        let memes = await this.memeRepo.find()
-        return memes
+    async getAllMemes(
+        paginationDto
+    ): Promise<Object> {
+        let { take, skip, page } = paginationDto
+        let totalCount = await this.memeRepo.createQueryBuilder('meme')
+        .select('*')
+        .getCount()
+
+        let memes = await this.memeRepo.createQueryBuilder('meme')
+        .select('*')
+        .offset(skip)
+        .limit(take)
+        .getRawMany()
+        return {
+            data: memes,
+            total: totalCount,
+            pageTotal: Math.ceil( totalCount / take),
+            pageCurrent: page
+        }
     }
 
     async createMeme(
