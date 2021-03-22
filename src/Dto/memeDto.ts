@@ -6,4 +6,7 @@ export class MemeDto {
 
     @IsString()
     meaning: string
+
+    @IsString()
+    meme_img: string
 }
