@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { MemeDto } from '../Dto/memeDto';
 import { PaginationDto } from '../Dto/pagination.dto';
 import { MemeService } from './meme.service';
 import { PageParam } from '../Decorator/pagination.decorator'
+import { FileInterceptor } from '@nestjs/platform-express';
+import { storage } from 'firebase-admin';
 
 @Controller('meme')
 export class MemeController {
@@ -23,7 +25,15 @@ export class MemeController {
         @Body() memeDto: MemeDto
     ) {
         return this.memeService.createMeme(memeDto)
+    }    
+
+    @UseInterceptors(FileInterceptor( 'file', ))
+    @Post('uploadfile')
+    uploadfile(
+        @UploadedFile() file
+    ) {
+        console.log("🚀 ~ file: meme.controller.ts ~ line 34 ~ MemeController ~ file", file)
+        return this.memeService.uploadfile(file)
     }
 
-    
 }
